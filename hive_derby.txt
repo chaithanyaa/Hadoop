@@ -1,0 +1,245 @@
+Hive Installation and Configuration
+
+Apache Hive is a data warehousing solution for Hadoop which provides data summarization, query, and ad-hoc analysis. It is used to process structured and semi-structured data in Hadoop. 
+
+Installation with derby database :
+
+Prerequisites:
+
+Java 7 /8 installed
+Dedicated user for hadoop (not mandatory)
+SSH configured
+
+1.Download the tarball file apache-hive-2.1.1-bin.tar.gz
+2.Extract the file to /usr/local/ path
+3.Downlaod the db derby file db-derby-10.9.1.0-bin.tar.gz
+4.Extract the file to /usr/local/
+5.Add the homepaths in .bashrc file and run the .bashrc file
+    export HIVE_HOME=/usr/local/hive
+	export PATH=$PATH:$HIVE_HOME/bin
+	export CLASSPATH=$CLASSPATH:/usr/local/Hadoop/lib/*:.
+	export CLASSPATH=$CLASSPATH:/usr/local/hive/lib/*:.
+    export DERBY_HOME=/usr/local/derby
+	export PATH=$PATH:$DERBY_HOME/bin
+	export CLASSPATH=$CLASSPATH:$DERBY_HOME/lib/derby.jar:$DERBY_HOME/lib/derbytools.jar
+
+Configuring Hive:
+
+1. Configure hive with hadoop edit the hive-env.sh file, which is placed in the $HIVE_HOME/conf directory.
+	cd $HIVE_HOME/conf
+	cp hive-env.sh.template hive-env.sh
+
+Edit the hive-env.sh file by appending the following line:
+	export HADOOP_HOME=/usr/local/hadoop
+	
+2. Get into conf directory under apache-hive-2.1.1-bin folder and rename hive-default.xml.template to hive-site.xml 
+  
+Replace following values in hive-site.xml
+
+  </property>
+  <property>
+    <name>hive.exec.local.scratchdir</name>
+    <value>${system:java.io.tmpdir}/${system:user.name}</value>
+    <description>Local scratch space for Hive jobs</description>
+  </property>
+  <property>
+    <name>hive.downloaded.resources.dir</name>
+    <value>${system:java.io.tmpdir}/${hive.session.id}_resources</value>
+    <description>Temporary local directory for added resources in the remote file system.</description>
+  </property>
+
+            With these values
+
+  </property>
+  <property>
+    <name>hive.exec.local.scratchdir</name>
+    <value>/tmp/${user.name}</value>
+    <description>Local scratch space for Hive jobs</description>
+  </property>
+  <property>
+    <name>hive.downloaded.resources.dir</name>
+    <value>/tmp/${user.name}_resources</value>
+    <description>Temporary local directory for added resources in the remote file system.</description>
+  </property>
+  
+Hive installation is completed successfully. Now you require an external database server to configure Metastore. We use Apache Derby database.
+
+Configuring Hive with derby database
+
+1.Create a directory to store Metastore
+	Create a directory named data in $DERBY_HOME directory to store Metastore data.
+	mkdir $DERBY_HOME/data
+	
+2.Configuring Metastore of Hive
+	Configuring Metastore means specifying to Hive where the database is stored. You can do this by editing the hive-site.xml file, which is in the $HIVE_HOME/conf directory. First of all, copy the template file using the following command:
+	
+	cd $HIVE_HOME/conf
+	cp hive-default.xml.template hive-site.xml
+	
+Edit hive-site.xml and append the following lines between the <configuration> and </configuration> tags:
+
+<property>
+   <name>javax.jdo.option.ConnectionURL</name>
+   <value>jdbc:derby://localhost:1527/metastore_db;create=true </value>
+   <description>JDBC connect string for a JDBC metastore </description>
+</property>
+
+Here we are creating metastore_db derby database 
+
+3.Create a file named jpox.properties  and add the following lines into it:
+
+javax.jdo.PersistenceManagerFactoryClass =
+
+org.jpox.PersistenceManagerFactoryImpl
+org.jpox.autoCreateSchema = false
+org.jpox.validateTables = false
+org.jpox.validateColumns = false
+org.jpox.validateConstraints = false
+org.jpox.storeManagerType = rdbms
+org.jpox.autoCreateSchema = true
+org.jpox.autoStartMechanismMode = checked
+org.jpox.transactionIsolation = read_committed
+javax.jdo.option.DetachAllOnCommit = true
+javax.jdo.option.NontransactionalRead = true
+javax.jdo.option.ConnectionDriverName = org.apache.derby.jdbc.ClientDriver
+javax.jdo.option.ConnectionURL = jdbc:derby://localhost:1527/metastore_db;create = true
+javax.jdo.option.ConnectionUserName = APP
+javax.jdo.option.ConnectionPassword = mine
+
+
+4.Verifying Hive Installation
+
+Before running Hive, you need to create the /tmp folder and a separate Hive folder in HDFS. Here, we use the /user/hive/warehouse folder. You need to set write permission for these newly created folders as shown below:
+
+chmod g+w
+Now set them in HDFS before verifying Hive. Use the following commands:
+
+$ $HADOOP_HOME/bin/hadoop fs -mkdir /tmp 
+$ $HADOOP_HOME/bin/hadoop fs -mkdir /user/hive/warehouse
+$ $HADOOP_HOME/bin/hadoop fs -chmod g+w /tmp 
+$ $HADOOP_HOME/bin/hadoop fs -chmod g+w /user/hive/warehouse
+
+5.The following commands are used to verify Hive installation:
+
+$ cd $HIVE_HOME
+$ hive --service metastore &
+
+hadoop@SP24HTP2 bin]$ which: no hbase in (/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin)
+Starting Hive Metastore Server
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/local/hive/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/local/hadoop-2.8.0/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+you can check the process is running or not 
+
+[hadoop@SP24HTP2 bin]$ ps -ef | grep hive
+hadoop   27914 23849 51 17:07 pts/1    00:00:22 /opt/jdk1.8.0_121/bin/java -Xmx256m -Dhadoop.log.dir=/usr/local/hadoop-2.8.0/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/local/hadoop-2.8.0 -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dlog4j.configurationFile=hive-log4j2.properties -Djava.util.logging.config.file=/usr/local/hive/conf/parquet-logging.properties -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/local/hive/lib/hive-metastore-2.1.1.jar org.apache.hadoop.hive.metastore.HiveMetaStore
+hadoop   28013 23849  0 17:08 pts/1    00:00:00 grep hive
+
+6.To enter to hive shell
+
+$ bin/hive
+
+On successful installation of Hive, you get to see the following response:
+$ hive
+which: no hbase in (/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/local/hive/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/local/hadoop-2.8.0/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+Logging initialized using configuration in jar:file:/usr/local/hive/lib/hive-common-2.1.1.jar!/hive-log4j2.properties Async: true
+Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+hive> show databases;
+OK
+default
+Time taken: 1.915 seconds, Fetched: 1 row(s)
+hive> use default;
+OK
+Time taken: 0.022 seconds
+hive> show tables;
+OK
+
+----------Using Beeline to connect with hiveserver2
+
+Prerequisites
+ Either run any one of them hive or hiveserver2 , we can connect to anyone of them at single .
+ Kilii the metasore hive if it is running .To connect to hiveserver2
+ 
+[hadoop@SP24HTP2 bin]$ ./hiveserver2 &
+[2] 28051
+[hadoop@SP24HTP2 bin]$ which: no hbase in (/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/local/hive/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/local/hadoop-2.8.0/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+Check the process 
+
+[hadoop@SP24HTP2 bin]$ ps -ef | grep hive
+hadoop   28051 23849 60 17:08 pts/1    00:00:15 /opt/jdk1.8.0_121/bin/java -Xmx256m -Dhadoop.log.dir=/usr/local/hadoop-2.8.0/logs -Dhadoop.log.file=hadoop.log -Dhadoop.home.dir=/usr/local/hadoop-2.8.0 -Dhadoop.id.str= -Dhadoop.root.logger=INFO,console -Dhadoop.policy.file=hadoop-policy.xml -Djava.net.preferIPv4Stack=true -Dlog4j.configurationFile=hive-log4j2.properties -Djava.util.logging.config.file=/usr/local/hive/conf/parquet-logging.properties -Dhadoop.security.logger=INFO,NullAppender org.apache.hadoop.util.RunJar /usr/local/hive/lib/hive-service-2.1.1.jar org.apache.hive.service.server.HiveServer2
+hadoop   28151 23849  0 17:09 pts/1    00:00:00 grep hive
+
+connect to beeline
+
+hadoop@SP24HTP2 bin]$ beeline
+which: no hbase in (/usr/local/bin:/bin:/usr/bin:/usr/local/sbin:/usr/sbin:/sbin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin:/home/hadoop/bin:/opt/jdk1.8.0_121/bin:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:.:/usr/local/hadoop-2.8.0/sbin:/usr/local/hadoop-2.8.0/bin:/usr/local/hive/bin:/usr/local/derby/bin)
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/usr/local/hive/lib/log4j-slf4j-impl-2.4.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/usr/local/hadoop-2.8.0/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Beeline version 2.1.1 by Apache Hive
+
+After successful connection connect to hive2 with following command
+
+beeline> !connect jdbc:hive2://
+Connecting to jdbc:hive2://
+Enter username for jdbc:hive2://:
+Enter password for jdbc:hive2://:
+17/08/10 17:18:26 [main]: WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+17/08/10 17:18:34 [main]: WARN session.SessionState: METASTORE_FILTER_HOOK will be ignored, since hive.security.authorization.manager is set to instance of HiveAuthorizerFactory.
+Connected to: Apache Hive (version 2.1.1)
+Driver: Hive JDBC (version 2.1.1)
+17/08/10 17:18:34 [main]: WARN jdbc.HiveConnection: Request to set autoCommit to false; Hive does not support autoCommit=false.
+Transaction isolation: TRANSACTION_REPEATABLE_READ
+
+Check the databases and tables
+
+0: jdbc:hive2://> show databases;
+OK
++-----------------+--+
+|  database_name  |
++-----------------+--+
+| default         |
++-----------------+--+
+1 row selected (2.964 seconds)
+0: jdbc:hive2://> use default;
+OK
+No rows affected (0.052 seconds)
+0: jdbc:hive2://> show tables;
+OK
++-----------------+--+
+|    tab_name     |
++-----------------+--+
++-----------------+--+
+No rows selected (0.131 seconds)
+
+-------------To connect to hive through JDBC 
+
+Add proxy in coresite.xml in hadoop as following and restart hadoop and hive 
+
+<property>
+     <name>hadoop.proxyuser.hadoop.hosts</name>
+     <value>*</value>
+</property>
+<property>
+     <name>hadoop.proxyuser.hadoop.groups</name>
+     <value>*</value>
+	 
+
+

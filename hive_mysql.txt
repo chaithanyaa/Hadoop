@@ -1,0 +1,65 @@
+Hive installation with mysql database
+
+Mysql database installation and configuration
+
+1.Download and install mysql-server and its dependencies.
+2.Intailize db with command
+     $ mysql_install_db
+connect to mysql with command 
+	$ mysql -u root -p
+3.It will prompt for password as we have not given any passowrd .Enter mysql with same mode and update the password
+ sudo /etc/init.d/mysql stop
+ 
+4.Now start up MySQL in safe mode, so you'll skip the privileges table:
+sudo mysqld_safe --skip-grant-tables &
+Login with root:
+mysql -uroot
+
+5. Assign the DB that needs to be used:
+use mysql;
+
+6.Now all you have to do is reset your root password of the MySQL user and restart the MySQL service:
+
+update user set password=PASSWORD("YOURPASSWORDHERE") where User='root';
+flush privileges;
+
+7.Quit and restart MySQL:
+
+quit
+sudo /etc/init.d/mysql stop
+sudo /etc/init.d/mysql start
+
+8. Now your root password should be working with the one you just set, check it with:
+
+mysql -u root -p
+Login and use mysql database
+
+9. Create Hiveuser and Hivepassword by commands
+
+ mysql> CREATE USER 'hive'@'%' IDENTIFIED BY 'tcstcs123';
+ mysql> GRANT all on *.* to 'hive'@localhost identified by 'tcstcs123';
+ mysql> flush privileges;
+ 
+10. Get into conf directory under apache-hive-2.1.1-bin folder and edit the derby configurations in below files
+
+ 1.In  hive-site.xml
+
+            Change following properties
+             a) ConnectionURL
+                <name>javax.jdo.option.ConnectionURL</name>
+                <value>jdbc:mysql://localhost/metastore_db?createDatabaseIfNotExist=true</value>
+             b) ConnectionUserName
+                <name>javax.jdo.option.ConnectionUserName</name>
+                <value>hive</value> 
+             c) ConnectionPassword
+                <name>javax.jdo.option.ConnectionPassword</name>
+                <value>tcstcs123</value>
+			 d) ConnectionDriver
+				<name>javax.jdo.option.ConnectionDriverName</name>
+				<value>com.mysql.jdbc.Driver</value>
+
+11. $schematool -initSchema -dbType mysql
+12. connect to hive or hiveserver2 
+
+
+

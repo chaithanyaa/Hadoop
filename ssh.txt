@@ -1,0 +1,11 @@
+To start hadoop in multinode
+
+Setup ssh in every node such that they can communicate with one another without any prompt for password.
+
+# su hadoop 
+$ ssh-keygen -t rsa 
+$ ssh-copy-id -i ~/.ssh/id_rsa.pub user@hostname
+$ ssh-copy-id -i ~/.ssh/id_rsa.pub user@hostname
+$ ssh-copy-id -i ~/.ssh/id_rsa.pub user@hostname
+$ chmod 0600 ~/.ssh/authorized_keys 
+$ exit
