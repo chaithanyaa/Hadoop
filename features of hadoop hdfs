@@ -1,0 +1,10 @@
+1.HDFS provides a write-once-read-many access model.
+2.HDFS is built using the Java language making it portable across various platforms.
+3.Economic : The HDFS is deployed in low commodity hardware(cheap hardware).So the cost for the infrastruture will be less.
+4.Variety and Volume of Data : In HDFS we can store huge data tera or petabytes of data and also different kinds of data structured or unstructured data.
+5.Fault Tolerance: HDFS is highly fault tolerant , in HDFS data is divided into blocks and multiple blocks of information is copied across the machines in the cluster. If any machine goes down we can get the data from other machines.
+6.Data Reliability : The data is stored reliably by creating a copies of data across the nodes and so provides Fault Tolerance.
+7.Data Integrity: The data in the nodes are checked whether correct or not .HDFS constantly checks the integrity of data stored aganist its checksum.If the data is fault, then it sends to namenode and namenode deletes the fault data and creates aditional replica of data in other nodes.
+8.High Throughput: The data is processed parallely in multiple nodes so we have high throughput i.e,we can access the data from file system 
+9.Data Locality: In traditional systems , the data is moved to the processing unit. But here the data is huge ,HDFS moves the processing unit to data which makes computation faster.
+10.Scalability : We can scale the cluster as required on run. This feautre helps to add more nodes on run without stooping the cluster. There are two ways to achieve it. Horizantal and vertical
