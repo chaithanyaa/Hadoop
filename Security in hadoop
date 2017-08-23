@@ -1,0 +1,24 @@
+Security can be achieved in following ways in hadoop
+
+1.To achieve the secure communication in hadoop  we need to enable RPC/SASL.SASL/GSSAPI was used to implement Kerberos and mutually authenticate users, their processes, and Hadoop services on RPC connections. We can enable them in core-site.xml as follows
+
+<property>
+ <name>hadoop.rpc.protection</name>
+<value>privacy</value>
+</property>
+
+2.Based on permissions on files to users and groups(access control) we can secure data.
+
+3.Enabling security module in core-site.xml as follows
+
+hadoop.security.authentication
+Kerberos
+hadoop.security.authorization
+true
+
+4. DataNodes have no concept of files or permissions , So when access to data blocks were needed, the NameNode would make an access control decision based on HDFS file permissions and would issue Block access tokens (using HMAC-SHA1) that could be sent to the DataNode for block access requests. in this way the connection between the HDFS permissions and access to the blocks of data is achieved.
+
+5.Other ways are used as thrid layer for protection  as
+-Existing IT security including network firewalls, logging and monitoring, and configuration management
+-Apache Knox used for perimeter security
+-Apache Argus monitoring and management
