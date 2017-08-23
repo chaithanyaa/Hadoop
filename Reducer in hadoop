@@ -1,0 +1,9 @@
+Reducer is the 2nd phase of processing the data in hadoop.Reducer takes the intermiedate (key,value pairs) output which stored in local disk from the mapper as input.Several reducers can run parallely since they are independent of each other.In Reducer we do aggregation or summation computation anlaysis.
+
+Reducer has 3 phases
+Shuffle : Output from the mapper, is shuffled from all the mappers.
+Sort   : Sorting is done parallely with shuffle phase where the input from different mappers is sorted
+Reduce : reducer task aggerates the key value pair and gives the required output based on the business logic implemented.The output of reducer is written on HDFS and is not sorted.
+
+By default no of reducers is set to 1 .User can set no of reducers for the job to run.
+Right no of reducers =0.95 or 1.75 * no of nodes * no of maximum container per node 
