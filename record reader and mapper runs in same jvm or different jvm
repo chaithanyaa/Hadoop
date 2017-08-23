@@ -1,0 +1,9 @@
+In Mapreduce the mapper understands key value pairs . So before data should be passed as key-value pairs.This was done by Inputsplit and record reader.
+
+Inputsplit splits the files into chunks .Inputsplit is user defined and user can define the split size based on the size of data.The no of splits will be equal to no of map task.split is the logical division of data.
+
+Record Reader converts the data into key value pair.The start is the byteoffset where record reader starts generating key/value pairs  and end is postion where to stop reading.It communicates with inputsplit until reading the complete data.
+
+InputFormat class is responsible for creating splits and dividing them into records.The data is divided into no of splits either 64  or 128 mb in HDFS. getsplit() method in inputFormat class computes the splits and pass to map task.Map task passes the splits to createRecordReader() method to get the RecordReader for that split.RecordReader loads the split and converts them in to key value pair 
+
+As the Record reader and mapper are in same mappernode.So they both run on same JVM.But if  reducer is on same JVM as mapper, any failure on reducer will kill the JVM and hence Hadoop will start re running mapper phase. This will be very inefficient 
