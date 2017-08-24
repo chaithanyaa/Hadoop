@@ -16,17 +16,14 @@ Setup of Multi Node Cluster in Hadoop
 
 We have two machines (master and slave) with IP:
 
-Master IP: 192.168.56.102
+Master IP: 192.168.56.102 --- hostname : master
 
-Slave IP: 192.168.56.103
+Slave IP: 192.168.56.103 ----- hostname : slave
 
 STEP 1: Check the IP address of all machines.
 
 Command: ip addr show (you can use the ifconfig command as well)
 
-Master IP Address - Hadoop Multi Node Cluster - Edureka
-
-Slave IP Address - Hadoop Multi Node Cluster - Edureka
 
 STEP 2: Disable the firewall restrictions.
 
@@ -34,7 +31,6 @@ Command: service iptables stop
 
 Command: sudo chkconfig iptables off
 
-Resolve Firewall Issues - Hadoop Multi Node Cluster - Edureka
 
 STEP 3: Open hosts file to add master and data node with their respective IP addresses.
 
@@ -42,35 +38,29 @@ Command: sudo nano /etc/hosts
 
 Same properties will be displayed in the master and slave hosts files.
 
-Open hosts file - Hadoop Multi Node Cluster - Edureka
 
-Master's hosts file cofiguration - Hadoop Multi Node Cluster - Edureka
 
 STEP 4: Restart the sshd service.
 
 Command: service sshd restart
 
-ssh Service Restart - Hadoop Multi Node Cluster - Edureka
 
- 
 
 STEP 5: Create the SSH Key in the master node. (Press enter button when it asks you to enter a filename to save the key).
 
 Command: ssh-keygen -t rsa -P “”
 
-Generating ssh key on master node - Hadoop Multi Node Cluster - Edureka
 
 STEP 6: Copy the generated ssh key to master node’s authorized keys.
 
 Command: cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
 
-ssh Authorizing localhost - Hadoop Multi Node Cluster - Edureka
 
 STEP 7: Copy the master node’s ssh key to slave’s authorized keys.
 
-Command: ssh-copy-id -i $HOME/.ssh/id_rsa.pub edureka@slave
+Command: ssh-copy-id -i $HOME/.ssh/id_rsa.pub hadoop@slave
 
-Copy master node key to slave - Hadoop Multi Node Cluster - Edureka
+
 
 STEP 8: Click here to download the Java 8 Package. Save this file in your home directory.
 
@@ -78,19 +68,18 @@ STEP 9: Extract the Java Tar File on all nodes.
 
 Command: tar -xvf jdk-8u101-linux-i586.tar.gz
 
-Extract java - Hadoop Multi Node Cluster - Edureka
+
 
 STEP 10: Download the Hadoop 2.7.3 Package on all nodes.
 
 Command: wget https://archive.apache.org/dist/hadoop/core/hadoop-2.7.3/hadoop-2.7.3.tar.gz
 
-Download Hadoop tar - Hadoop Multi Node Cluster - Edureka
 
 STEP 11: Extract the Hadoop tar File on all nodes.
 
 Command: tar -xvf hadoop-2.7.3.tar.gz
 
-Extract Hadoop tar file - Hadoop Multi Node Cluster - Edureka
+
 
 STEP 12: Add the Hadoop and Java paths in the bash file (.bashrc) on all nodes.
 
@@ -98,9 +87,6 @@ Open. bashrc file. Now, add Hadoop and Java Path as shown below:
 
 Command:  sudo gedit .bashrc
 
-Open bashrc - Hadoop Multi Node Cluster - Edureka
-
-bash file - Hadoop Multi Node Cluster - Edureka
 
 Then, save the bash file and close it.
 
@@ -108,47 +94,60 @@ For applying all these changes to the current Terminal, execute the source comma
 
 Command: source .bashrc
 
-Source bash - Hadoop Multi Node Cluster - Edureka
+export HADOOP_HOME=/home/hadoop/hadoop-2.7.3
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export YARN_HOME=$HADOOP_HOME
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export HADOOP_INSTALL=$HADOOP_HOME
+export JAVA_HOME=/opt/jdk1.8.0_121
+export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:.
+
+
 
 To make sure that Java and Hadoop have been properly installed on your system and can be accessed through the Terminal, execute the java -version and hadoop version commands.
 
 Command: java -version
-
-java version - Hadoop Multi Node Cluster - Edureka
-
 Command: hadoop version
 
-hadoop version - Hadoop Multi Node Cluster - Edureka
 
 Now edit the configuration files in hadoop-2.7.3/etc/hadoop directory.
 
 STEP 13: Create masters file and edit as follows in both master and slave machines as below:
 
+Give the hostname of master or ip
+
 Command: sudo gedit masters
 
-masters - Hadoop Multi Node Cluster - Edureka
+master
+
+
 
 STEP 14: Edit slaves file in master machine as follows:
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/slaves
+Give the hostname of master and slave
 
-master node slaves file - Hadoop Multi Node Cluster - Edureka
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/slaves
+
+master
+slave
+
 
 STEP 15: Edit slaves file in slave machine as follows:
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/slaves
+Give the hostname of slave
 
-slave node slaves file - Hadoop Multi Node Cluster - Edureka
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/slaves
+
+slave
+
 
 STEP 16: Edit core-site.xml on both master and slave machines as follows:
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/core-site.xml
-
-open core-site - Hadoop Multi Node Cluster - Edureka
-
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/core-site.xml
  
-
-	
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
@@ -158,10 +157,11 @@ open core-site - Hadoop Multi Node Cluster - Edureka
 </property>
 </configuration>
 
-STEP 7: Edit hdfs-site.xml on master as follows:
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
 
-open hdfs-site Hadoop Multi Node Cluster - Edureka
+STEP 17: Edit hdfs-site.xml on master as follows:
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+
+
 
 	
 <?xml version="1.0" encoding="UTF-8"?>
@@ -177,17 +177,18 @@ open hdfs-site Hadoop Multi Node Cluster - Edureka
 </property>
 <property>
 <name>dfs.namenode.name.dir</name>
-<value>/home/edureka/hadoop-2.7.3/namenode</value>
+<value>/home/hadoop/hadoop-2.7.3/namenode</value>
 </property>
 <property>
 <name>dfs.datanode.data.dir</name>
-<value>/home/edureka/hadoop-2.7.3/datanode</value>
+<value>/home/hadoop/hadoop-2.7.3/datanode</value>
 </property>
 </configuration>
 
+
 STEP 18: Edit hdfs-site.xml on slave machine as follows:
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
 
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -202,7 +203,7 @@ Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/hdfs-site.xml
 </property>
 <property>
 <name>dfs.datanode.data.dir</name>
-<value>/home/edureka/hadoop-2.7.3/datanode</value>
+<value>/home/hadoop/hadoop-2.7.3/datanode</value>
 </property>
 </configuration>
 
@@ -210,13 +211,8 @@ STEP 19: Copy mapred-site from the template in configuration folder and the edit
 
 Command: cp mapred-site.xml.template mapred-site.xml
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/mapred-site.xml
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/mapred-site.xml
 
-copy mapred-site from template - Hadoop Multi Node Cluster - Edureka
-
-open yarn-site - Hadoop Multi Node Cluster - Edureka
-
- 
 	
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -229,10 +225,7 @@ open yarn-site - Hadoop Multi Node Cluster - Edureka
 
 STEP 20: Edit yarn-site.xml on both master and slave machines as follows:
 
-Command: sudo gedit /home/edureka/hadoop-2.7.3/etc/hadoop/yarn-site.xml
-
-open yarn-site - Hadoop Multi Node Cluster - Edureka
-
+Command: sudo gedit /home/hadoop/hadoop-2.7.3/etc/hadoop/yarn-site.xml
  
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
@@ -251,26 +244,33 @@ STEP 21: Format the namenode (Only on master machine).
 
 Command: hadoop namenode -format
 
-Namenode format - Hadoop Multi Node Cluster - Edureka
+
 
 STEP 22: Start all daemons (Only on master machine).
 
 Command: ./sbin/start-all.sh
 
-start-all daemon - Hadoop Multi Node Cluster - Edureka
+
 
 STEP 23: Check all the daemons running on both master and slave machines.
 
+Master:
+
 Command: jps
 
-On master
+17080 NameNode
+17105 DataNode
+27417 Jps
+17611 NodeManager
+17499 ResourceManager
+17324 SecondaryNameNode
 
-jps - Hadoop Multi Node Cluster - Edureka
 
-On slave
+Slave:
 
-jps slave - Hadoop Multi Node Cluster - Edureka
+Command: jps
 
- 
+8767 NodeManager
+8915 DataNode
 
 At last, open the browser and go to master:50070/dfshealth.html on your master machine, this will give you the NameNode interface. Scroll down and see for the number of live nodes, if its 2, you have successfully setup a multi node Hadoop cluster. In case, it’s not 2, you might have missed out any of the steps which I have mentioned above. But no need to worry, you can go back and verify all the configurations again to find the issues and then correct them.
