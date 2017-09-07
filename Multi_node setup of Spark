@@ -1,0 +1,134 @@
+2.2. Install Spark on Master
+
+I. Prerequisites
+
+a. Add Entries in hosts file
+
+Edit hosts file
+
+10.196.212.112 slave
+10.196.220.131 master
+
+sudo nano /etc/hosts
+Now add entries of master and slaves
+
+10.196.220.131 master
+10.196.212.112 slave
+
+
+b. Install Java 7 or 8 (Recommended Oracle Java)
+
+c. Install Scala
+
+Downlaod the scala 
+
+Extract the Scala tar file
+Type the following command for extracting the Scala tar file.
+
+$ tar xvf scala-2.11.6.tgz
+Move Scala software files to respective directory (/usr/local/scala).
+
+$ export PATH = $PATH:/usr/local/scala/bin
+
+Verifying Scala Installation
+After installation, it is better to verify it. Use the following command for verifying Scala installation.
+
+$scala -version
+If Scala is already installed on your system, you get to see the following response −
+
+Scala code runner version 2.11.6 -- Copyright 2002-2013, LAMP/EPFL
+
+
+a. Download Spark
+
+You can download the latest version of spark from http://spark.apache.org/downloads.html.
+
+b. Untar Tarball
+
+tar xzf spark-2.0.0-bin-hadoop2.6.tgz
+
+(Note: All the scripts, jars, and configuration files are available in newly created directory “spark-2.0.0-bin-hadoop2.6”)
+
+c. Setup Configuration
+
+i. Edit .bashrc
+
+Now edit .bashrc file located in user’s home directory and add following environment variables:
+
+export JAVA_HOME=<path-of-Java-installation> (eg: /usr/lib/jvm/java-7-oracle/)
+export SPARK_HOME=<path-to-the-root-of-your-spark-installation> (eg: /home/dataflair/spark-2.0.0-bin-hadoop2.6/)
+export PATH=$PATH:$SPARK_HOME/bin
+
+ii. Edit spark-env.sh
+
+Now edit configuration file spark-env.sh (in $SPARK_HOME/conf/) and set following parameters:
+
+Note: Create a copy of template of spark-env.sh and rename it:
+
+cp spark-env.sh.template spark-env.sh
+
+export JAVA_HOME=<path-of-Java-installation> (eg: /usr/lib/jvm/java-7-oracle/)
+export SPARK_WORKER_CORES=8
+
+iii. Add Salves
+
+Create configuration file slaves (in $SPARK_HOME/conf/) and add following entries:
+10.196.212.112
+
+“Apache Spark has been installed successfully on Master, now deploy Spark on all the Slaves”
+
+2.3. Install Spark On Slaves
+I. Setup Prerequisites on all the slaves
+
+Run following steps on all the slaves (or worker nodes):
+
+“1.1. Add Entries in hosts file”
+“1.2. Install Java”
+“1.3. Install Scala”
+
+II. Copy setups from master to all the slaves
+
+a. Create tarball of configured setup
+
+tar czf spark.tar.gz spark-2.0.0-bin-hadoop2.6
+
+b. Copy the configured tarball on all the slaves
+
+scp spark.tar.gz slave:~
+
+
+III. Un-tar configured spark setup on all the slaves
+
+tar xzf spark.tar.gz
+NOTE: Run this command on all the slaves
+
+“Congratulations Apache Spark has been installed on all the Slaves. Now Start the daemons on the Cluster”
+
+2.4. Start Spark Cluster
+I. Start Spark Services
+
+sbin/start-all.sh
+Note: Run this command on Master
+
+II. Check whether services have been started
+
+a. Check daemons on Master
+
+jps
+Master
+
+b. Check daemons on Slaves
+
+jps
+Worker
+
+2.5. Spark Web UI
+I. Spark Master UI
+
+Browse the Spark UI to know about worker nodes, running application, cluster resources.
+
+http://10.196.220.131:8080/
+
+II. Spark application UI
+
+http://10.196.220.131:4040/
