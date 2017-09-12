@@ -1,0 +1,8 @@
+http://data-flair.training/forums/topic/which-part-of-metadata-is-stored-on-namenode%E2%80%99s-disk-persistently
+http://data-flair.training/forums/topic/what-is-disk-balancer-in-hadoop-1
+http://data-flair.training/forums/topic/how-to-submit-extra-filesjarsstatic-files-for-mapreduce-job-during-runtime
+http://data-flair.training/forums/topic/what-happen-if-number-of-reducer-is-0-in-hadoop
+http://data-flair.training/forums/topic/what-is-keyvaluetextinputformat-in-hadoop
+Your username is: MallamlaChaitanya
+Your password is: ><MN0987
+You can now log in: http://data-flair.training/forums/
