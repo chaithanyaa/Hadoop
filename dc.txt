@@ -8,3 +8,5 @@ Your password is: ><MN0987
 You can now log in: http://data-flair.training/forums/
 
 https://github.com/vineetdhanawat/big-data/blob/master/Joins/Q2.java
+
+http://timepasstechies.com/mapreduce-reduce-side-join-top-n-records-pattern-real-world-example/
