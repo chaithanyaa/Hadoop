@@ -10,3 +10,73 @@ You can now log in: http://data-flair.training/forums/
 https://github.com/vineetdhanawat/big-data/blob/master/Joins/Q2.java
 
 http://timepasstechies.com/mapreduce-reduce-side-join-top-n-records-pattern-real-world-example/
+
+
+
+
+
+
+ What happen if number of reducer is set to 0 in Hadoop?
+ 
+ The number of reducer can be set to 0 in driver class by job.setNumreduceTasks(0).This shows that there is no reducer phase and has only map phase.It is called as map-only job.
+ 
+ Map-only job:
+ Map-only job has only map phase.The ouput of mapper stores directly on HDFS not on disk.The map output is final output.As it has no reducer phase, the aggreation and sorting is also not done.Generally in map-reducer job the output after shuffling and sorting goes to reducer ,when the data is huge it needs good network bandwidth.As there is no shuffling and sorting in map-only job there will be less network congension.
+ 
+ What is KeyValueTextInputFormat in Hadoop? 
+ 
+ TextInputFormat class is the default InputFormat.KeyValueTextInputFormat is the child class of TextInputFormat.Here in KeyValueTextInputFormat , each line is taken as seperate record.Each record has key and value .In a line i.e in a record ,it takes up to '/t' (tab seperate ) as key and after tab seperate as value.If there is no seperator , then entire line is taken as key and value will be empty.
+ 
+ Eg:
+ Dataflair	2
+ line	1
+ 
+ How to submit extra files(jars,static files) for MapReduce job during runtime ?
+ 
+ There are two ways to add jars and static files.
+ 
+ 1.Using Distributed cache
+ 2.Add jars at runtime -CLI
+ 
+ 
+ Distributed cache:
+ 
+It is used when the applications needs some cache files to run. Distributed cache can cache read only files, jars and archive.
+
+Hadoop makes cache in all datanodes of the repective files and made avialabe when they are required to run the map and reduce jobs.
+ 
+ Distributed cache is added in driver class as shown below
+ 
+DistributedCache.addFileToClasspath(new Path (“/user/dataflair/lib/jar-file.jar”), conf)
+
+Before adding in driver class ,Copy the requisite file to the HDFS and make it avialabe as shown:
+
+$ hdfs dfs-put/user/dataflair/lib/jar_file.jar
+
+	In this way we can add the extra files.
+
+2.Add jars at run time using CLI:
+
+adding libraries using -libjars parameter on CLI. 
+
+$ export LIBJARS=/path/jar1,/path/jar2
+$ hadoop jar /path/to/my.jar com.wordpress.hadoopi.MyClass -libjars ${LIBJARS} value
+
+
+What is Disk Balancer in Hadoop
+
+Disk Balancer is a utility that HDFS has to uniformly distribute the data across all the datanodes.The datanodes might not have uniform distribution because of many read write operations ,disk replacement or adding new datanode to the cluster.THis results in non uniform distribution of data across the datanodes.
+
+To overcome this problem,Disk Balancer utility is used.By default is set to false. To enable the disk balancer to true , we have to set it in hdfs-site.xml 
+set the property dfs.disk.balancer.enabled  to true
+
+Disk Balancer creates a plan for the movement of data.The plan has details of how much data is to moved from one disk to other i.e , details of source disk, destination disk and the number of bytes to move. It will execute against an operational datanode.
+
+which-part-of-metadata-is-stored-on-namenode%E2%80%99s-disk-persistently
+
+Namenode gen
+
+fsimage - An fsimage file contains the complete state of the file system at a point in time. Every file system modification is assigned a unique, monotonically increasing transaction ID. An fsimage file represents the file system state after all modifications up to a specific transaction ID.
+ 
+edits – An edits file is a log that lists each file system change (file creation, deletion or modification) that was made after the most recent fsimage.
+
