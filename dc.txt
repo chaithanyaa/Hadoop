@@ -206,6 +206,7 @@ TwitterAgent.channels.MemChannel.type = memory
 TwitterAgent.channels.MemChannel.capacity = 10000
 TwitterAgent.channels.MemChannel.transactionCapacity = 100
 
+http://bigdatahadooptrainings.com/twitter-sentiment-analysis-using-pig-hive/
 
 
 
