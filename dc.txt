@@ -31,6 +31,116 @@ http://timepasstechies.com/mapreduce-reduce-side-join-top-n-records-pattern-real
  Dataflair	2
  line	1
  
+ 
+ 
+ ADD JAR json-serde-1.1.9.9-Hive1.2-jar-with-dependencies.jar-with-dependencies
+
+CREATE EXTERNAL TABLE tweets_raw (
+id BIGINT,
+created_at STRING,
+source STRING,
+favorited BOOLEAN,
+retweet_count INT,
+retweeted_status STRUCT<
+text:STRING,
+user_rt:STRUCT<screen_name:STRING,name:STRING>>,
+entities STRUCT<
+urls:ARRAY<STRUCT<expanded_url:STRING>>,
+user_mentions:ARRAY<STRUCT<screen_name:STRING,name:STRING>>,
+hashtags:ARRAY<STRUCT<text:STRING>>>,
+text STRING,
+user_struct STRUCT<
+screen_name:STRING,
+name:STRING,
+friends_count:INT,
+followers_count:INT,
+statuses_count:INT,
+verified:BOOLEAN,
+utc_offset:STRING,
+time_zone:STRING>,
+in_reply_to_screen_name STRING
+)
+ROW FORMAT SERDE 'org.openx.data.jsonserde.JsonSerDe'
+WITH SERDEPROPERTIES ( "mapping.user_rt" = "user" ,"mapping.user_struct" = "user" )
+LOCATION '/data/tweets_raw';
+
+
+
+
+CREATE EXTERNAL TABLE dictionary (
+type string,
+length int,
+word string,
+pos string ,
+stemmed string,
+polarity string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION '/data/dictionary';
+
+
+CREATE EXTERNAL TABLE time_zone_map (
+time_zone string,
+country string,
+notes string
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION '/data/time_zone_map';
+
+
+CREATE VIEW	tweets_simple AS
+SELECT id,cast ( from_unixtime ( unix_timestamp(concat ('2013 ',substring(created_at,5,15)), 'YYYY MMM ddhh:mm:ss')) as timestamp) ts,
+text,
+user_struct.time_zone FROM tweets_raw;
+
+
+CREATE VIEW tweets_clean AS 
+SELECT id,ts,text,m.country FROM tweets_simple t LEFT OUTER JOIN time_zone_map m ON t.time_zone = m.time_zone;
+
+
+
+Create view 11 as select id, words from tweets_raw lateral view explode(sentences(lower(text))) dummy as words;
+
+create view 12 as select id, word from 11 lateral view explode( words ) dummy as word ;
+
+create view 13 as select id, 12.word ,
+cased.polarity 
+when 'negative' then -1 when 'positive' then 1 else 0 end as polarity from 12 left outer join dictionary d on 12.word = d.word;
+
+!hadoop fs -chmod -R 777 /tmp;
+
+
+create table tweets_sentiment stored as RCFILE as select id,
+case
+when sum( polarity) > 0 then 'positive'
+when sum( polarity) < 0 then 'negative'
+else 'netural' end as sentiment from 13 group by id;
+
+
+CREATE TABLE tweets_senti
+STORED AS RCFILE AS
+SELECT t.*,
+cases.sentiment
+when 'positive' then 2
+when 'netural' then 1
+when 'negative' then 0
+end as sentiment
+FROM tweets_clean t LEFT OUTER JOIN tweets_sentiment s on t.id = s.id;
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
  How to submit extra files(jars,static files) for MapReduce job during runtime ?
  
  There are two ways to add jars and static files.
