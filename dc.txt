@@ -14,7 +14,9 @@ http://timepasstechies.com/mapreduce-reduce-side-join-top-n-records-pattern-real
 
 
 
+https://cloudxlab.com/assessment/slide/hive-project/338/hive-project-sentiment-analysis-sentiment-in-china
 
+https://gist.github.com/umbertogriffo/a512baaf63ce0797e175
 
  What happen if number of reducer is set to 0 in Hadoop?
  
