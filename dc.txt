@@ -322,7 +322,31 @@ http://bigdatahadooptrainings.com/twitter-sentiment-analysis-using-pig-hive/
 
 
 
-
+What is slot in Hadoop v1 Map-Reduce ?
+can number of combiners can be changed?
+How to specify more than one directory as input in the MapReduce Program?
+what name node does when it enters in safemode?
+how to change the replication factor for existing data already present in HDFS?
+how to compress mapper output
+In MapReduce how to change the name of output file from part-r-00000
+Difference between Internal and External table in Hive?
+Why Mapper runs in heavy weight process and not in a thread?
+What Happens When NameNode Goes down during File Read Operation ??
+Why block size is set to 128 MB in Hadoop?
+What is Fault Tolerance in HDFS?
+How data or file is read in HDFS?
+Which compression is used in Hadoop? Which of them is splittable?
+How to set the number of mappers to be created?
+Compare Hadoop and RDBMS?
+Can multiple clients write into an HDFS file concurrently?
+What are the configuration files in Hadoop?
+How to enable Trash / Recycle Bin in Hadoop?
+When and how to create hadoop archive
+What is HDFS - Hadoop Distributed File System?
+What are the different modes in which we can configure/install Hadoop?
+Why HDFS stores data using commodity hardware despite higher chance of failures?
+What are the Features of Hadoop?
+Who divide the file into block while storing inside hdfs
 
 
 
